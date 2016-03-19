@@ -30,7 +30,7 @@ public class ColorMandelbrot {
         return d;
     }
     
-    public static void main(String[] args)  {
+    public void drawPoints(){
         double xc   = 0.0;
         double yc   = 0.0;
         double size = 2;
@@ -62,6 +62,11 @@ public class ColorMandelbrot {
             }
         }
         pic.show();
-    }
+    }//drawPoints
+    
+    public static void main(String[] args)  {
+        ColorMandelbrot colorMandelbrot = new ColorMandelbrot();
+        colorMandelbrot.drawPoints();
+    }//main ( String, args )
 
-}
+}//ColorMandelbrot

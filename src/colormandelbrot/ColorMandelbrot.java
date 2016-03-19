@@ -13,12 +13,13 @@ public class ColorMandelbrot extends JFrame implements ActionListener  {
     private final JPanel ctrlPanel;
     private final JPanel btnPanel;
     private final int numIter = 50;
-    private final double zoom = 130;
-    private final double zoomIncrease = 100;
-    private final int ITERS = 256;
+    private double zoom = 130;
+    private double zoomIncrease = 100;
+    private int ITERS = 256;
     private BufferedImage I;
     private double zx, zy, xc, yc, temp;
-    private final int xMove, yMove = 0;
+    private int xMove = 0;
+    private int yMove = 0;
     private final JButton[] ctrlBtns = new JButton[9];
     private final Color themeColor = new Color(150, 180, 200);
     
@@ -63,8 +64,8 @@ public class ColorMandelbrot extends JFrame implements ActionListener  {
         }//for
 
         validate();
-
     }
+    
     // return number of iterations to check if c = a + ib is in Mandelbrot set
     public static int mand(Complex z0, int d) {
         Complex z = z0;
@@ -102,14 +103,53 @@ public class ColorMandelbrot extends JFrame implements ActionListener  {
         pic.show();
     }//drawPoints
     
+    public void actionPerformed(ActionEvent ae) {
+        String event = ae.getActionCommand();
+
+        switch (event) {
+            case "up":
+                yMove -= 100;
+                break;
+            case "down":
+                yMove += 100;
+                break;
+            case "left":
+                xMove -= 100;
+                break;
+            case "right":
+                xMove += 100;
+                break;
+//            case "+":
+//                zoom += zoomIncrease;
+//                zoomIncrease += 100;
+//                break;
+            case "+":
+                double initialZoom = zoom;
+                zoom += zoomIncrease;
+                zoomIncrease *= 2;
+                xMove *= 2;
+                yMove *= 2;
+                break;
+            case "-":
+                zoom -= zoomIncrease;
+                zoomIncrease -= 100;
+                break;
+            case ">":
+                ITERS++;
+                break;
+            case "<":
+                ITERS--;
+                break;
+        }//switch
+
+        plotPoints();
+        validate();
+        repaint();
+    }//actionPerfomed
+    
     public static void main(String[] args)  {
         ColorMandelbrot colorMandelbrot = new ColorMandelbrot();
         colorMandelbrot.plotPoints();
-    }//main ( String, args )
-
-    @Override
-    public void actionPerformed(ActionEvent ae) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+    }//main ( String, args )    
 
 }//ColorMandelbrot

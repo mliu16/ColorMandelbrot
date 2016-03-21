@@ -7,6 +7,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import javax.swing.*;
 import java.awt.event.*;
+import static javafx.scene.input.KeyCode.I;
 
 public class ColorMandelbrot extends JFrame implements ActionListener  {
     
@@ -15,7 +16,7 @@ public class ColorMandelbrot extends JFrame implements ActionListener  {
     private final int numIter = 50;
     private double zoom = 130;
     private double zoomIncrease = 100;
-    private int ITERS = 256;
+    private int ITERS = 20;
     private BufferedImage I;
     private double zx, zy, xc, yc, temp;
     private int xMove = 0;
@@ -24,7 +25,7 @@ public class ColorMandelbrot extends JFrame implements ActionListener  {
     private final Color themeColor = new Color(150, 180, 200);
     
     public ColorMandelbrot (){
-         super("Mandelbrot Set");
+        super("Mandelbrot Set");
         setBounds(100, 100, 800, 600);
         setResizable(false);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -66,6 +67,17 @@ public class ColorMandelbrot extends JFrame implements ActionListener  {
         validate();
     }
     
+    public class imgPanel extends JPanel {
+
+        public imgPanel() {
+            setBounds(0, 0, 600, 600);
+        }//imgPanel()  
+         public void paint(Graphics g) {
+            super.paint(g);
+            g.drawImage(I, 0, 0, this);
+        }//paint()
+       }
+    
     // return number of iterations to check if c = a + ib is in Mandelbrot set
     public static int mand(Complex z0, int d) {
         Complex z = z0;
@@ -76,32 +88,24 @@ public class ColorMandelbrot extends JFrame implements ActionListener  {
         return d;
     }
     
-    public void plotPoints(){
-        xc   = 0.0;
-        yc   = 0.0;
-        double size = 2;
-        int N = 512;       
-        // read in color map
-        Color[] colors = new Color[ITERS];
-        for (int t = 0; t < ITERS; t++) {
-            int r = (int) (1 + Math.random()*254);
-            int g = (int) (1 + Math.random()*254);
-            int b = (int) (1 + Math.random()*254);
-            colors[t] = new Color(r, g, b);
-        }//for
-        // compute Mandelbrot set  
-        Picture pic = new Picture(N, N);
-        for (int i = 0; i < N; i++) {
-            for (int j = 0; j < N; j++) {
-                double x = xc - size/2 + size*i/N;
-                double y = yc - size/2 + size*j/N;
-                Complex z0 = new Complex(x, y);
-                int t = mand(z0, ITERS - 1);
-                pic.set(i, N-1-j, colors[t]);
+ public void plotPoints() {
+        I = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_RGB);
+        for (int y = 0; y < getHeight(); y++) {
+            for (int x = 0; x < getWidth(); x++) {
+                zx = zy = 0;
+                xc = (x - 320 + xMove) / zoom;
+                yc = (y - 290 + yMove) / zoom;
+                int iter = numIter;
+                while (zx * zx + zy * zy < 4 && iter > 0) {
+                    temp = zx * zx - zy * zy + xc;
+                    zy = 2 * zx * zy + yc;
+                    zx = temp;
+                    iter--;
+                }//while
+                I.setRGB(x, y, iter | (iter << ITERS));
             }//for
         }//for
-        pic.show();
-    }//drawPoints
+    }//plotPoints
     
     public void actionPerformed(ActionEvent ae) {
         String event = ae.getActionCommand();
@@ -118,11 +122,7 @@ public class ColorMandelbrot extends JFrame implements ActionListener  {
                 break;
             case "right":
                 xMove += 100;
-                break;
-//            case "+":
-//                zoom += zoomIncrease;
-//                zoomIncrease += 100;
-//                break;
+                break;            
             case "+":
                 double initialZoom = zoom;
                 zoom += zoomIncrease;
@@ -148,8 +148,9 @@ public class ColorMandelbrot extends JFrame implements ActionListener  {
     }//actionPerfomed
     
     public static void main(String[] args)  {
-        ColorMandelbrot colorMandelbrot = new ColorMandelbrot();
-        colorMandelbrot.plotPoints();
+//        ColorMandelbrot colorMandelbrot = new ColorMandelbrot();
+//        colorMandelbrot.plotPoints();
+          new ColorMandelbrot().setVisible(true);
     }//main ( String, args )    
 
 }//ColorMandelbrot
